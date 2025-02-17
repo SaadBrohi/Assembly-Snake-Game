@@ -1,0 +1,640 @@
+Include Irvine32.inc
+.data
+grid byte 1,2,3,4,5,6,7,8,9,10
+byte 20,19,18,17,16,15,14,13,12,11
+byte 21,22,23,24,25,26,27,28,29,30
+byte 40,39,38,37,36,35,34,33,32,31
+byte 41,42,43,44,45,46,47,48,49,50
+byte 60,59,58,57,56,55,54,53,52,51
+byte 61,62,63,64,65,66,67,68,69,70
+byte 80,79,78,77,76,75,74,73,72,71
+byte 81,82,83,84,85,86,87,88,89,90
+byte 100,99,98,97,96,95,94,93,92,91
+pro1 byte "                                      Welcome to Snake and Ladders!", 0
+pro2 byte "Player 1 Press Enter to roll the dice: ", 0
+pro4 byte "You Rolled: ", 0
+pro5 byte "Your Position is: ", 0
+pro6 byte "There is a Ladder from 3 to 10", 0
+pro7 byte "There is a Ladder from 20 to 29", 0
+pro8 byte "There is a Ladder from 63 to 81", 0
+pro9 byte "There is a Ladder from 80 to 99", 0
+pro10 byte "There is a Snake from 98 to 77", 0
+pro11 byte "There is a Snake from 40 to 22", 0
+pro12 byte "There is a Snake from 50 to 30", 0
+pro13 byte "Game over, Player 1 won               ", 0
+pro14 byte "Game over, Player 2 won               ", 0
+pro15 byte "You cannot move                  ", 0
+extra byte "                                 ", 0
+pro16 byte "Player 2 Press Enter to roll the dice: ", 0
+pro17 byte "Player 1: ", 0
+pro18 byte "Player 2: ", 0
+pro19 byte "You climbed a ladder          ", 0
+pro20 byte "You got bitten by a snake         ", 0
+pos DWORD 0
+pos2 DWORD 0
+pi DWORD ?
+pi2 DWORD ?
+filename BYTE "Snakes and Ladders.txt", 0
+.code
+main PROC
+mov edx, offset pro1
+call writestring
+call crlf
+mov edx, OFFSET pro6
+call WriteString
+call Crlf
+mov edx, OFFSET pro7
+call WriteString
+call Crlf
+mov edx, OFFSET pro8
+call WriteString
+call Crlf
+mov edx, OFFSET pro9
+call WriteString
+call Crlf
+mov edx, OFFSET pro10
+call WriteString
+call Crlf
+mov edx, OFFSET pro11
+call WriteString
+call Crlf
+mov edx, OFFSET pro12
+call WriteString
+call Crlf
+mov edx, OFFSET pro17
+call WriteString
+mov eax, 127
+call writechar
+call Crlf
+mov edx, OFFSET pro18
+call WriteString
+mov eax, 224
+call writechar
+mov eax, 1
+L:
+cmp pos, 100
+je endd
+cmp pos2, 100
+je endd2
+call Printgrid
+call rolldice
+jmp L
+endd:
+mov grid[90], 127
+call printgrid
+mov dh, 15
+mov dl, 52
+call gotoxy
+
+mov edx, offset filename
+call createoutputfile
+mov edx, offset pro13
+call writestring
+mov ecx, sizeof pro13
+mov edx, offset pro13
+call writetofile
+mov dh, 13
+mov dl, 0
+jmp p
+endd2:
+mov grid[90], 224
+call printgrid
+mov dh, 15
+mov dl, 52
+call gotoxy
+
+mov edx, offset filename
+call createoutputfile
+mov edx, offset pro14
+call writestring
+mov ecx, sizeof pro14
+mov edx, offset pro14
+call writetofile
+mov dh, 19
+mov dl, 0
+p:
+call gotoxy
+mov edx, offset pro5
+call writestring
+mov eax, 100
+call writedec
+call crlf
+mov edx, offset extra
+call writestring
+call crlf
+call writestring
+call crlf
+call writestring
+call crlf
+call crlf
+call crlf
+call crlf
+call crlf
+call crlf
+call crlf
+exit
+main ENDP
+
+
+rolldice PROC
+mov edx, offset pro2
+call WriteString
+call ReadChar
+call randomize
+mov eax, 6
+call randomrange
+inc eax
+call crlf
+mov edx, offset pro4
+call writestring
+call writedec
+call crlf
+cmp pos, 0
+je next0
+mov ebx, pi
+mov edx, pos
+cmp edx, pos2
+je next
+mov grid[ebx], dl
+jmp next0
+next:
+mov grid[ebx], 224
+next0:
+add pos, eax
+cmp pos, 100
+je endd
+cmp pos, 100
+jg greater
+
+
+cmp pos, 3
+je ladder3
+
+cmp pos, 20
+je ladder20
+
+cmp pos, 50
+je snake50
+
+cmp pos, 63
+je ladder63
+
+cmp pos, 80
+je ladder80
+
+cmp pos, 98
+je snake98
+
+cmp pos, 40
+je snake40
+jmp display
+
+
+ladder3:
+mov edx, offset pro5
+call writestring
+mov eax, pos
+call writedec
+call crlf
+mov edx, offset pro19
+call writestring
+call crlf
+mov pos, 10
+jmp display
+
+
+
+ladder20:
+mov edx, offset pro5
+call writestring
+mov eax, pos
+call writedec
+call crlf
+mov edx, offset pro19
+call writestring
+call crlf
+mov pos, 29
+jmp display
+
+
+ladder63:
+mov edx, offset pro5
+call writestring
+mov eax, pos
+call writedec
+call crlf
+mov edx, offset pro19
+call writestring
+call crlf
+mov pos, 81
+jmp display
+
+ 
+
+ladder80:
+mov edx, offset pro5
+call writestring
+mov eax, pos
+call writedec
+call crlf
+mov edx, offset pro19
+call writestring
+call crlf
+mov pos, 99
+jmp display
+
+ 
+
+snake98:
+mov edx, offset pro5
+call writestring
+mov eax, pos
+call writedec
+call crlf
+mov edx, offset pro20
+call writestring
+call crlf
+mov pos, 77
+jmp display
+
+snake40:
+mov edx, offset pro5
+call writestring
+mov eax, pos
+call writedec
+call crlf
+mov edx, offset pro20
+call writestring
+call crlf
+mov pos, 22
+jmp display
+
+snake50:
+mov edx, offset pro5
+call writestring
+mov eax, pos
+call writedec
+call crlf
+mov edx, offset pro20
+call writestring
+call crlf
+mov pos, 30
+jmp display
+
+greater:
+mov edx, offset pro15
+call writestring
+call crlf
+sub pos, eax
+
+display:
+
+mov edx, offset pro5
+call writestring
+mov eax, pos
+call writedec
+call crlf
+mov edx, offset extra
+call writestring
+call crlf
+mov edx, offset extra
+call writestring
+call crlf
+mov ecx, 100
+mov esi, 0
+L:
+cmp al, grid[esi]
+je found
+inc esi
+loop L
+mov esi, pi2
+found:
+cmp grid[esi], 224
+je found4
+mov grid[esi], 127
+mov pi, esi
+jmp f
+found4:
+mov grid[esi], 150
+mov pi, esi
+f:
+call printgrid
+mov dh, 14
+mov dl, 0
+call gotoxy
+jmp s
+endd:
+ret
+s:
+call crlf
+call crlf
+call crlf
+mov edx, offset pro16
+call WriteString
+call ReadChar
+call randomize
+mov eax, 6
+call randomrange
+inc eax
+call crlf
+mov edx, offset pro4
+call writestring
+call writedec
+call crlf
+cmp pos2, 0
+je next1
+mov ebx, pi2
+mov edx, pos2
+cmp edx, pos
+je next2
+mov grid[ebx], dl
+jmp next1
+next2:
+mov grid[ebx], 127
+next1:
+add pos2, eax
+cmp pos2, 100
+je endd2
+cmp pos2, 100
+jg greater2
+
+
+cmp pos2, 3
+je ladder23
+
+cmp pos2, 20
+je ladder220
+
+cmp pos2, 50
+je snake250
+
+cmp pos2, 63
+je ladder263
+
+cmp pos2, 80
+je ladder280
+
+cmp pos2, 98
+je snake298
+
+cmp pos2, 40
+je snake240
+jmp display2
+
+
+ladder23:
+mov edx, offset pro5
+call writestring
+mov eax, pos2
+call writedec
+call crlf
+mov edx, offset pro19
+call writestring
+call crlf
+mov pos2, 10
+jmp display2
+
+
+
+ladder220:
+mov edx, offset pro5
+call writestring
+mov eax, pos2
+call writedec
+call crlf
+mov edx, offset pro19
+call writestring
+call crlf
+mov pos2, 29
+jmp display2
+
+
+ladder263:
+mov edx, offset pro5
+call writestring
+mov eax, pos2
+call writedec
+call crlf
+mov edx, offset pro19
+call writestring
+call crlf
+mov pos2, 81
+jmp display2
+
+ 
+
+ladder280:
+mov edx, offset pro5
+call writestring
+mov eax, pos2
+call writedec
+call crlf
+mov edx, offset pro19
+call writestring
+call crlf
+mov pos2, 99
+jmp display2
+
+ 
+
+snake298:
+mov edx, offset pro5
+call writestring
+mov eax, pos2
+call writedec
+call crlf
+mov edx, offset pro20
+call writestring
+call crlf
+mov pos2, 77
+jmp display2
+
+snake240:
+mov edx, offset pro5
+call writestring
+mov eax, pos2
+call writedec
+call crlf
+mov edx, offset pro20
+call writestring
+call crlf
+mov pos2, 22
+jmp display2
+
+snake250:
+mov edx, offset pro5
+call writestring
+mov eax, pos2
+call writedec
+call crlf
+mov edx, offset pro20
+call writestring
+call crlf
+mov pos2, 30
+jmp display2
+
+greater2:
+mov edx, offset pro15
+call writestring
+call crlf
+sub pos2, eax
+
+display2:
+
+mov edx, offset pro5
+call writestring
+mov eax, pos2
+call writedec
+call crlf
+mov edx, offset extra
+call writestring
+call crlf
+mov edx, offset extra
+call writestring
+call crlf
+mov ecx, 100
+mov esi, 0
+L2:
+cmp al, grid[esi]
+je found2
+inc esi
+loop L2
+mov esi, pi
+found2:
+cmp grid[esi], 127
+je found3
+mov grid[esi], 224
+mov pi2, esi
+jmp endd2
+found3:
+mov grid[esi], 150
+mov pi2, esi
+endd2:
+ret
+rolldice ENDP
+
+
+Printgrid PROC
+mov ecx, lengthof grid
+mov dh, 14
+L:
+dec dh
+mov dl, 44
+call gotoxy
+mov al, "|"
+call writechar
+loop L
+mov esi, 0
+mov ecx, lengthof grid - 1
+mov dh, 14
+L3:
+push ecx
+mov ecx, lengthof grid
+dec dh
+mov dl, 45
+call gotoxy
+L4:
+mov al, " "
+call writechar
+cmp grid[esi], 127
+je A30
+cmp grid[esi], 150
+je A1502
+cmp grid[esi], 224
+je A30
+cmp esi, 9
+jge A1
+mov al, grid[esi]
+call writedec
+jmp L6
+A1502:
+mov al, 127
+call writechar
+mov al, 224
+call writechar
+jmp enddd
+A1:
+mov al, grid[esi]
+call writedec
+jmp enddd
+A30:
+mov al, grid[esi]
+call writechar
+L6:
+mov al, " "
+call writechar
+enddd:
+mov al, "|"
+call writechar
+inc esi
+loop L4
+pop ecx
+loop L3
+mov ecx, lengthof grid - 1
+mov dl, 45
+dec dh
+call gotoxy
+cmp grid[esi], 127
+je A4
+cmp grid[esi], 224
+je A4
+mov al, grid[esi]
+call writedec
+mov al, "|"
+call writechar
+jmp L9
+A4:
+mov al, " "
+call writechar
+mov al, grid[esi]
+call writechar
+mov al, " "
+call writechar
+mov al, "|"
+call writechar
+L9:
+inc esi
+L5:
+mov al, " "
+call writechar
+cmp grid[esi], 127
+je A127
+cmp grid[esi], 150
+je A150
+cmp grid[esi], 224
+je A224
+mov al, grid[esi]
+call writedec
+jmp bs
+A150:
+mov al, 127
+call writechar
+mov al, 224
+call writechar
+jmp bs
+A224:
+mov al, grid[esi]
+call writechar
+mov al, " "
+call writechar
+jmp bs
+A127:
+mov al, grid[esi]
+call writechar
+mov al, " "
+call writechar
+bs:
+mov al, "|"
+call writechar
+inc esi
+loop L5
+call crlf
+call crlf
+call crlf
+call crlf
+call crlf
+call crlf
+call crlf
+ret
+Printgrid ENDP
+END main
